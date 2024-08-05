@@ -18,13 +18,11 @@ mongoose.connect(url) // on appelle la fonction connect de mongoose avec l'url d
 
 const methodOverride = require('method-override'); // on appelle la dépendance method-override apres son installation
 app.use(methodOverride('_method')); // on utilise la dépendance method-override ; des qu'on voit un _method dans l'URL, c'est qu'on utilise la methode override
-
-app.set('view engine', 'ejs'); // on définit le moteur de template à utiliser pour les vues qui est ejs dans le dossier views
-
-//Partie blog
-// Création d'un nouvel article
+var Forum = require('./models/Forum');
+//Partie forum
+// Création d'un nouveu post
 app.post('/newPost', function (req, res) {  
-    const NewPost = new Blog({         
+    const NewPost = new Forum({         
         titre: req.body.titre,
         auteur: req.body.auteur,   
         texte: req.body.texte,  
@@ -33,20 +31,21 @@ app.post('/newPost', function (req, res) {
     NewPost.save()  // on enregistre les données dans la bdd 
         .then(() => {
             console.log("Post saved !");
-            res.redirect('/blog');          // on rederige vers la page blog
+            res.redirect('/forum');          // on rederige vers la page blog
         })
         .catch(error => console.log(error)); // on affiche l'erreur 
 });
 
 // récupération de tous les posts
-app.get('/blog', function (req, res) {  
-    Blog.find()                         
+app.get('/forum', function (req, res) {  
+    Forum.find()                         
         .then(allposts => {     
             res.json(allposts);  
             console.log("Récupération des données réussie !");
         })
         .catch(error => console.log(error));
 });
+
 var server = app.listen(5000, function () {   // on lance le serveur sur le port 5000
     console.log('server running on port 5000');    //mettre un message dans la console quand le serveur est lancé
 
