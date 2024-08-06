@@ -1,4 +1,4 @@
-const mongoose = require('mongoose'); // On appelle la dépendance mongoose
+const mongoose = require('mongoose'); 
 
 const ForumSchema = new mongoose.Schema({
     titre: { type: String, required: true },
@@ -9,4 +9,4 @@ const ForumSchema = new mongoose.Schema({
   });
 
 
-module.exports = mongoose.model('Forum', ForumSchema); // Exportation du modèle Blog
+module.exports = mongoose.model('Forum', ForumSchema); 
