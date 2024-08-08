@@ -25,6 +25,8 @@ app.use(methodOverride('_method')); // on utilise la dépendance method-override
 var Forum = require('./models/Forum');
 var User = require('./models/User');
 var Action = require('./models/Action');
+var Don = require('./models/Don');
+
 //PARTIE FORUM
 
 // Création d'un nouveu post
@@ -213,7 +215,7 @@ app.post('/newAction', function (req, res) {
     NewAction.save()  
         .then(() => {
             console.log("Action saved !");
-            res.redirect('http://localhost:3000/actions');         
+            res.redirect('http://localhost:3000/admin/gestionActions');         
         })
         .catch(error => console.log(error)); 
 });
@@ -259,6 +261,35 @@ app.put('/admin/updateAction/:id', function (req, res) {
             res.redirect('http://localhost:3000/admin/gestionActions');
         })
         .catch(error => console.log(error));
+});
+
+// Suppression d'une action
+
+app.delete('/admin/deleteAction/:id', function (req, res) {
+    Action.findOneAndDelete({
+        _id: req.params.id
+    }).then(() => {
+        console.log("Action deleted!");
+        res.redirect('http://localhost:3000/admin/gestionActions');
+    }).catch(error => console.log(error));
+});
+
+// Faire un don
+app.post('/newDon', function (req, res) {
+    if (!req.authenticated) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const NewDon = new Don({
+        montant: req.body.montant,
+        idUtilisateur: req.authenticated.id   // Utiliser l'ID de l'utilisateur extrait du token
+    });
+    NewDon.save()  
+        .then(() => {
+            console.log("Don effectué !");
+            res.redirect('http://localhost:3000/');         
+        })
+        .catch(error => console.log(error)); 
 });
 var server = app.listen(5000, function () {   // on lance le serveur sur le port 5000
     console.log('server running on port 5000');    //mettre un message dans la console quand le serveur est lancé
