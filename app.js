@@ -187,6 +187,17 @@ app.put('/admin/updateUser/:id', function (req, res) {
         .catch(error => console.log(error));
 });
 
+// SUPPRESSION UN USER
+//DELETE
+app.delete('/admin/deleteUser/:id', function (req, res) {
+    User.findOneAndDelete({
+        _id: req.params.id
+    }).then(() => {
+        console.log("User deleted !");
+        res.redirect('http://localhost:3000/admin/gestionUsers');
+    }).catch(error => console.log(error));
+});
+
 //Partie Actions
 //Création d'une nouvelle action
 app.post('/newAction', function (req, res) {
@@ -206,6 +217,7 @@ app.post('/newAction', function (req, res) {
         })
         .catch(error => console.log(error)); 
 });
+
 // Récupérations de toutes les actions
 app.get('/actions', function (req, res) {
     Action.find()
@@ -224,6 +236,28 @@ app.get('/action/:id', function (req, res) {
     }).then(data => {
         res.json(data);
     })
+        .catch(error => console.log(error));
+});
+
+// Modification d'une action
+
+app.put('/admin/updateAction/:id', function (req, res) {
+    const ActionData = {
+        type: req.body.type,
+        titre: req.body.titre,
+        description: req.body.description,
+        tarif: req.body.tarif,
+        image: req.body.image,
+        date: req.body.date,
+        lieu: req.body.lieu
+    }
+    Action.updateOne({
+        _id: req.params.id           // on récupère l'id de la donnée
+    }, { $set: ActionData })                  // avec $set on met à jour les données
+        .then(() => {
+            console.log("Action updated!");
+            res.redirect('http://localhost:3000/admin/gestionActions');
+        })
         .catch(error => console.log(error));
 });
 var server = app.listen(5000, function () {   // on lance le serveur sur le port 5000
