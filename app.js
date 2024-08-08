@@ -24,7 +24,7 @@ const methodOverride = require('method-override'); // on appelle la dépendance 
 app.use(methodOverride('_method')); // on utilise la dépendance method-override ; des qu'on voit un _method dans l'URL, c'est qu'on utilise la methode override
 var Forum = require('./models/Forum');
 var User = require('./models/User');
-
+var Action = require('./models/Action');
 //PARTIE FORUM
 
 // Création d'un nouveu post
@@ -81,6 +81,17 @@ app.put('/updatePost/:id', function (req, res) {
         })
         .catch(error => console.log(error));
 });
+
+// Suppression d'un post
+app.delete('/deletePost/:id', function (req, res) {
+    Forum.findOneAndDelete({ _id: req.params.id })
+        .then(() => {
+            console.log('Suppression réussie');
+            res.redirect('http://localhost:3000/forum');
+        })
+        .catch(error => console.log(error));
+});
+
 //INSCRIPTION
 
 //NEW USER
@@ -149,9 +160,69 @@ app.get('/logout', function(req, res) {
 });
 
 // Gestion des users par l'admin
+
+//liste des users
 app.get('/admin/gestionUsers', function (req, res) {
     User.find().then(users => {
         res.json(users);
+    })
+        .catch(error => console.log(error));
+});
+
+// MODIFIER UN USER
+
+app.put('/admin/updateUser/:id', function (req, res) {
+    const userData = {
+        username: req.body.username,
+        email: req.body.email,
+        admin: req.body.admin
+    }
+    User.updateOne({
+        _id: req.params.id           // on récupère l'id de la donnée
+    }, { $set: userData })                  // avec $set on met à jour les données
+        .then(() => {
+            console.log("User updated!");
+            res.redirect('http://localhost:3000/admin/gestionUsers');
+        })
+        .catch(error => console.log(error));
+});
+
+//Partie Actions
+//Création d'une nouvelle action
+app.post('/newAction', function (req, res) {
+    const NewAction = new Action({
+        type: req.body.type,
+        titre: req.body.titre,
+        description: req.body.description,
+        tarif: req.body.tarif,
+        image: req.body.image,
+        date: req.body.date ,
+        lieu: req.body.lieu
+    })
+    NewAction.save()  
+        .then(() => {
+            console.log("Action saved !");
+            res.redirect('http://localhost:3000/actions');         
+        })
+        .catch(error => console.log(error)); 
+});
+// Récupérations de toutes les actions
+app.get('/actions', function (req, res) {
+    Action.find()
+        .then(data => {
+            res.json(data);
+            console.log("Récupération des données réussie !");
+        })
+        .catch(error => console.log(error));
+});
+
+// Affichage d'une action
+
+app.get('/action/:id', function (req, res) {
+    Action.findOne({
+        _id: req.params.id
+    }).then(data => {
+        res.json(data);
     })
         .catch(error => console.log(error));
 });
